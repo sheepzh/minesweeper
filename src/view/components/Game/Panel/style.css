@@ -1,0 +1,15 @@
+.mine-grid {
+    display: grid;
+    border-style: solid;
+    border-color: #9f9f9f #fff #fff #9f9f9f;
+    box-sizing: border-box;
+}
+
+.mine-cell {
+    box-sizing: border-box;
+}
+
+.mine-cell.unknown {
+    border-color: #fff #808080 #808080 #fff;
+    border-style: solid;
+}

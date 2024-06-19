@@ -1,6 +1,7 @@
 import React from "react"
 import { useGame } from "@core/useGame"
 import Cell from "./Cell"
+import "./style.css"
 
 const Panel = () => {
     const { mines, shape } = useGame({ level: 'expert' })
@@ -8,37 +9,34 @@ const Panel = () => {
     return (
         <div
             style={{
+                padding: 6,
                 backgroundColor: '#c0c0c0',
-                borderLeft: '3px solid rgb(245, 245, 245)',
-                borderTop: '3px solid rgb(245, 245, 245)',
-                padding: 5,
+                borderWidth: 3,
+                borderStyle: 'solid',
+                borderColor: '#fff #9f9f9f #9f9f9f #fff',
+                borderRadius: 2,
             }}
         >
             <div
                 style={{
                     height: 34,
-                    borderRadius: 1,
                     borderWidth: 2,
                     borderStyle: 'solid',
-                    borderColor: 'rgb(128, 128, 128) rgb(245, 245, 245) rgb(245, 245, 245) rgb(128, 128, 128)',
-                    marginBottom: 5,
+                    borderColor: '#9c9c9c #fff #fff #9c9c9c',
+                    marginBottom: 6,
                     display: "flex",
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    padding: '3px 7px 3px 4px',
+                    padding: 5,
                 }}
             >
-
             </div>
             <div
+                className="mine-grid"
                 style={{
-                    display: 'grid',
                     gridTemplateColumns: `repeat(${width}, ${100 / width}%)`,
-                    gridTemplateRows: `repeat(${height}, ${100 / height}%)`,
                     borderWidth: 3,
-                    borderStyle: 'solid',
-                    borderColor: 'rgb(128, 128, 128) rgb(245, 245, 245) rgb(245, 245, 245) rgb(128, 128, 128)',
-                    boxSizing: 'border-box',
+                    borderRadius: 1,
                 }}
             >
                 {mines?.map((mine) => (
