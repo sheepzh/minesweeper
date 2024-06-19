@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "baseUrl": ".",
+    "target": "ES2022",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "strict": false,
+    "skipLibCheck": true,
+    "paths": {
+      "@core/*": [
+        "src/core/*"
+      ],
+      "@util/*": [
+        "src/util/*"
+      ],
+      "*": [
+        "types/*"
+      ]
+    }
+  },
+  "lib": [
+    "dom",
+    "ES2023"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
+  "ts-node": {
+    "files": true,
+    "require": [
+      "tsconfig-paths/register"
+    ]
+  }
+}
