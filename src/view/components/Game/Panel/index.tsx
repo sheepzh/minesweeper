@@ -1,48 +1,34 @@
-import React from "react"
-import { useGame } from "@core/useGame"
+import React, { useState } from "react"
+import { Mine, Position, useGame } from "@core/useGame"
 import Cell from "./Cell"
-import "./style.css"
+import "./style.sass"
+import Bar from "./Bar"
+import { classNames } from "@util/style"
 
 const Panel = () => {
-    const { mines, shape } = useGame({ level: 'expert' })
-    const { width, height } = shape || {}
+    const { mines, shape, clickMine, gameTime, resetGame, state } = useGame({ level: 'expert' })
+    const { width } = shape || {}
+    const [pressingPos, setPressingPos] = useState<Position>()
+
+    const handleOpen = (mine: Mine) => {
+        setPressingPos(null)
+        clickMine(mine)
+    }
     return (
-        <div
-            style={{
-                padding: 6,
-                backgroundColor: '#c0c0c0',
-                borderWidth: 3,
-                borderStyle: 'solid',
-                borderColor: '#fff #9f9f9f #9f9f9f #fff',
-                borderRadius: 2,
-            }}
-        >
-            <div
-                style={{
-                    height: 34,
-                    borderWidth: 2,
-                    borderStyle: 'solid',
-                    borderColor: '#9c9c9c #fff #fff #9c9c9c',
-                    marginBottom: 6,
-                    display: "flex",
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: 5,
-                }}
-            >
-            </div>
+        <div className={classNames('game-root', state)}>
+            <Bar time={gameTime} flag={0} onReset={resetGame} />
             <div
                 className="mine-grid"
-                style={{
-                    gridTemplateColumns: `repeat(${width}, ${100 / width}%)`,
-                    borderWidth: 3,
-                    borderRadius: 1,
-                }}
+                style={{ gridTemplateColumns: `repeat(${width}, ${100 / width}%)` }}
             >
-                {mines?.map((mine) => (
+                {mines?.map((mine, idx) => (
                     <Cell
-                        key={`${mine?.pos?.[0]}_${mine?.pos?.[1]}`}
+                        gameState={state}
+                        pressingPos={pressingPos}
+                        key={`mine_${idx}`}
                         value={mine}
+                        onPressing={() => setPressingPos(mine?.pos)}
+                        onOpen={() => handleOpen(mine)}
                     />
                 ))}
             </div>

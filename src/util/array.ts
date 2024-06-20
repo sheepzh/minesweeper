@@ -1,7 +1,7 @@
 export const fillWith = <T,>(length: number, supplier: (idx: number) => T) => {
-    return [...Array(length).keys()].map(idx => supplier?.(idx))
+    return Array.from(Array(length)).map((_, idx) => supplier?.(idx))
 }
 
 export const repeat = (time: number, doSomething: () => void) => {
-    return Array(time).forEach(doSomething)
+    return Array.from(Array(time)).forEach(doSomething)
 }

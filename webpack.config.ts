@@ -40,6 +40,17 @@ const webpackConfig: Configuration = {
         }, {
             test: /\.css$/,
             use: [MiniCssExtractPlugin.loader, "css-loader"],
+        }, {
+            test: /\.sc|ass$/,
+            use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
+        }, {
+            test: /\.(png)$/,
+            type: 'asset',
+            parser: {
+                dataUrlCondition: {
+                    maxSize: 10 * 1024,
+                }
+            },
         }],
     },
     output: {

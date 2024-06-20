@@ -1,6 +1,7 @@
 import { fillWith, repeat } from "@util/array"
 import { useMount } from "ahooks"
 import { useEffect, useMemo, useState } from "react"
+import { useCounter } from "./useCounter"
 
 export type GameSetting = {
     level: ms.Level
@@ -31,10 +32,10 @@ export type GameInstance = {
     shape: GameShape
     mines: Mine[]
     state: GameState
-    startTime: number
-    startGame: () => void
     resetGame: () => void
     changeSetting: (setting?: GameSetting) => void
+    clickMine: (mine: Mine) => void
+    gameTime: number
 }
 
 const computeShape = (setting: GameSetting): GameShape => {
@@ -50,10 +51,21 @@ const computeShape = (setting: GameSetting): GameShape => {
     }
 }
 
+const iterateAround = (shape: GameShape, mines: Mine[], target: Mine, doSomething: (m: Mine) => void) => {
+    const { width, height } = shape || {}
+    const { pos: [x, y] } = target
+    for (let i = Math.max(0, x - 1); i <= Math.min(width - 1, x + 1); i++) {
+        for (let j = Math.max(0, y - 1); j <= Math.min(height - 1, y + 1); j++) {
+            if (i === x && j === y) continue
+            doSomething?.(mines[j * width + i])
+        }
+    }
+}
+
 const resetPosition = (shape: GameShape, mines: Mine[], firstClickPos: Position): Mine[] => {
     const { width, height, mineCount } = shape || {}
     const [x, y] = firstClickPos || []
-    const clickIdx = x * width + y
+    const clickIdx = y * width + x
     const length = width * height
 
     // Fill mines
@@ -65,16 +77,11 @@ const resetPosition = (shape: GameShape, mines: Mine[], firstClickPos: Position)
             break
         }
     })
+
     // Calculate around
     mines.forEach(mine => {
-        const { pos: [x, y] } = mine
         let count = 0
-        for (let i = Math.max(0, x - 1); i++; i <= Math.min(width - 1, x + 1)) {
-            for (let j = Math.max(0, y - 1); j++; j <= Math.min(height - 1, y + 1)) {
-                if (i === x && j === y) continue
-                mines[i * width + j]?.mine && count++
-            }
-        }
+        iterateAround(shape, mines, mine, another => another.mine && count++)
         mine.around = count
     })
     return mines
@@ -85,7 +92,11 @@ export const useGame = (setting: GameSetting): GameInstance => {
     const shape = useMemo(() => computeShape($setting), [$setting])
     const [mines, setMines] = useState([])
     const [state, setState] = useState<GameState>()
-    const [startTime, setStartTime] = useState<number>()
+    const {
+        time: gameTime,
+        start: startTimeCount,
+        end: endTimeCount
+    } = useCounter()
 
     const resetGame = () => {
         let mines: Mine[] = []
@@ -98,9 +109,9 @@ export const useGame = (setting: GameSetting): GameInstance => {
                 return { state: 'unknown', mine: false, around: 0, pos: [x, y] }
             })
         }
+        endTimeCount(true)
         setMines(mines)
         setState('initial')
-        setStartTime(null)
     }
 
     useEffect(resetGame, [$setting])
@@ -109,17 +120,43 @@ export const useGame = (setting: GameSetting): GameInstance => {
     const startGame = (firstClickPos?: Position) => {
         resetPosition(shape, mines, firstClickPos)
         setState('running')
-        setStartTime(Date.now())
+        startTimeCount()
+    }
+
+    const endGame = (mine: Mine) => {
+        endTimeCount()
+        mine.state = 'boom'
+        setState('dead')
+    }
+
+    const doOpen = (mine: Mine) => {
+        if (mine.state === 'open') return
+        mine.state = 'open'
+        !mine.around && iterateAround(shape, mines, mine, doOpen)
+    }
+
+    const doFlag = (mine: Mine) => {
+
+    }
+
+    const clickMine = (mine: Mine) => {
+        if (state === 'initial') {
+            startGame(mine?.pos)
+        } else if (state !== 'running') {
+            return
+        }
+        if (mine.state === 'unknown') {
+            mine.mine ? endGame(mine) : doOpen(mine)
+        }
     }
 
     return {
         shape,
         mines,
         state,
-        startTime,
-        startGame,
         resetGame,
         changeSetting: setSetting,
+        clickMine,
+        gameTime,
     }
 }
-
