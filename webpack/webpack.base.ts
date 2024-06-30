@@ -2,7 +2,7 @@ import { Configuration } from "webpack"
 import HtmlWebpackPlugin from "html-webpack-plugin"
 import MiniCssExtractPlugin from "mini-css-extract-plugin"
 import path from "path"
-import tsConfig from "./tsconfig.json"
+import tsConfig from "../tsconfig.json"
 const tsPathAlias = tsConfig.compilerOptions.paths
 
 // Process the alias of typescript modules
@@ -18,7 +18,7 @@ Object.entries(tsPathAlias).forEach(([alias, sourceArr]) => {
         return
     }
     const index = alias.match(aliasPattern)[1]
-    const webpackSourceArr = sourceArr.map(folder => path.resolve(__dirname, folder.replace(/\/\*$/, '')))
+    const webpackSourceArr = sourceArr.map(folder => path.resolve(__dirname, '..', folder.replace(/\/\*$/, '')))
     resolveAlias[index] = webpackSourceArr
 })
 console.log("Alias of typescript: ")
@@ -64,6 +64,7 @@ const webpackConfig: Configuration = {
         new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({
             filename: path.join('index.html'),
+            title: 'Nothing Here',
             chunks: ['index'],
         }),
     ],

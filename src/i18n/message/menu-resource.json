@@ -1,0 +1,24 @@
+{
+    "en": {
+        "game": {
+            "label": "Game",
+            "new": "New Game",
+            "restart": "Restart"
+        },
+        "option": {
+            "label": "Options",
+            "pref": "Preferences"
+        }
+    },
+    "zh_CN": {
+        "game": {
+            "label": "游戏",
+            "new": "重新开始",
+            "restart": "重新开始"
+        },
+        "option": {
+            "label": "选项",
+            "pref": "设置"
+        }
+    }
+}

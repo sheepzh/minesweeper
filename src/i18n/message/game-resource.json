@@ -1,0 +1,16 @@
+{
+    "en": {
+        "level": {
+            "beginner": "Beginner",
+            "intermediate": "Intermediate",
+            "expert": "Expert"
+        }
+    },
+    "zh_CN": {
+        "level": {
+            "beginner": "初级",
+            "intermediate": "中级",
+            "expert": "高级"
+        }
+    }
+}

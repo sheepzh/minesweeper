@@ -1,0 +1,24 @@
+{
+    "en": {
+        "title": "Setting",
+        "label": {
+            "language": "Language",
+            "resolution": "Game resolution"
+        },
+        "resolution": {
+            "low": "Low",
+            "high": "High"
+        }
+    },
+    "zh_CN": {
+        "title": "设置",
+        "label": {
+            "language": "语言",
+            "resolution": "游戏分辨率"
+        },
+        "resolution": {
+            "low": "低",
+            "high": "高"
+        }
+    }
+}

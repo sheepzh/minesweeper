@@ -1,0 +1,58 @@
+.menu-container
+    width: 100%
+    display: flex
+
+.menu-group
+    padding: 0 5px
+    font-size: 11px
+    height: 20px
+    position: relative
+    user-select: none
+    cursor: pointer
+    .group-label
+        height: 100%
+        display: flex
+        align-items: center
+    &.open
+        background-color: #1660e8
+        color: white
+        .menu-dropdown
+            display: flex
+            flex-direction: column
+    .menu-dropdown
+        position: absolute
+        top: 20px
+        left: 0
+        background-color: white
+        box-shadow: #646464 2px 2px 1px
+        border: 1px solid gray
+        display: none
+        grid-template-columns: 18px auto auto 15px
+        line-height: 18px
+        font-size: 11px
+        color: #000
+        .menu-item
+            display: flex
+            padding: 2px
+            gap: 2px
+            cursor: pointer
+            .check-box
+                display: flex
+                justify-content: center
+                width: 18px
+                &.checked
+                    background: center center no-repeat
+                    background-image: url('./image/checked.png')
+            .label
+                width: 70px
+                line-height: 18px
+            .shortcut
+                padding-left: 5px
+                padding-right: 18px
+            &:hover
+                background-color: #1660e8
+                color: white
+        .menu-separator
+            border-bottom: 1px solid gray
+            margin: 3px
+            margin-left: 20px

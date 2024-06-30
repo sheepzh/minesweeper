@@ -1,13 +1,16 @@
 import { useRef, useState } from "react"
 
-export type CounterInstance = {
+export type TimeCounter = {
+    start: () => void
+    end: () => void
+    reset: () => void
     time: number
 }
 
-export const useCounter = () => {
+export const useTimeCounter = (): TimeCounter => {
     const [time, setTime] = useState<number>()
     const startTime = useRef<number>()
-    const timer = useRef<NodeJS.Timer>()
+    const timer = useRef<NodeJS.Timeout>()
 
     const start = () => {
         setTime(0)
@@ -18,12 +21,16 @@ export const useCounter = () => {
         })
     }
 
-    const end = (makeZero?: boolean) => {
-        clearInterval(timer.current)
-        makeZero && setTime(0)
+    const end = () => {
+        timer.current && clearInterval(timer.current)
+    }
+
+    const reset = () => {
+        end()
+        setTime(0)
     }
 
     return {
-        start, end, time
+        start, end, reset, time,
     }
 }

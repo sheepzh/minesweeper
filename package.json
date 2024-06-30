@@ -1,21 +1,29 @@
 {
   "name": "minesweeper",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "scripts": {
+    "dev": "webpack-dev-server --config=webpack/webpack.dev.ts --progress --mode=development --env dev",
     "build": "webpack --progress --mode=production",
-    "dev": "webpack-dev-server --progress --mode=development"
+    "build:chrome": "webpack --progress --config=webpack/webpack.chrome.ts"
   },
-  "author": "zhy",
+  "author": {
+    "name": "Victor Zhang",
+    "email": "returnzhy1996@outlook.com"
+  },
   "license": "MIT",
   "devDependencies": {
     "@babel/preset-env": "^7.24.7",
     "@babel/preset-typescript": "^7.24.7",
     "@babel/register": "^7.24.6",
+    "@types/chrome": "^0.0.268",
+    "@types/generate-json-webpack-plugin": "^0.3.7",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.2",
+    "filemanager-webpack-plugin": "^8.0.0",
+    "generate-json-webpack-plugin": "^2.0.0",
     "html-webpack-plugin": "^5.6.0",
     "mini-css-extract-plugin": "^2.9.0",
     "node-sass": "^9.0.0",
@@ -30,7 +38,8 @@
   "dependencies": {
     "ahooks": "^3.8.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "xp.css": "^0.2.6"
   },
   "engines": {
     "node": ">=20"

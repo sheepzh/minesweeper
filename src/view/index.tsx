@@ -1,7 +1,8 @@
 import React from "react"
 import { createRoot } from "react-dom/client"
 import Main from "./Main"
-import "./style.css"
+import "./style.sass"
+import "xp.css/dist/XP.css"
 
 const main = () => {
     const appContainerEle = document.createElement('div')
@@ -13,4 +14,3 @@ const main = () => {
 }
 
 main()
-
