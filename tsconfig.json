@@ -16,6 +16,21 @@
       "@util/*": [
         "src/util/*"
       ],
+      "@view/*": [
+        "src/view/*"
+      ],
+      "@i18n/*": [
+        "src/i18n/*"
+      ],
+      "@ext/*": [
+        "src/extension/*"
+      ],
+      "@api/*": [
+        "src/api/*"
+      ],
+      "@src/*": [
+        "src/*"
+      ],
       "*": [
         "types/*"
       ]

@@ -1,44 +1,33 @@
 import { fillWith, repeat } from "@util/array"
-import { useMount } from "ahooks"
-import { useEffect, useMemo, useState } from "react"
-import { useCounter } from "./useCounter"
+import { useCounter } from "ahooks"
+import { Ref, RefObject, useEffect, useMemo, useRef, useState } from "react"
+import { useTimeCounter } from "./useTimeCounter"
+import { countNeighbor, GameShape, GameState, iterateNeighbor, Position, Tile } from "./common"
+import { calculateMetrics, GameMetrics } from "./metrics"
 
-export type GameSetting = {
-    level: ms.Level
-    forceNf?: boolean
-}
-
-export type GameShape = {
-    width: number
-    height: number
-    mineCount: number
-}
-
-export type Position = [
-    x: number,
-    y: number,
-]
-
-export type GameState = 'initial' | 'running' | 'dead'
-
-export type Mine = {
-    state: 'unknown' | 'open' | 'flag' | 'boom'
-    mine: boolean
-    around: number
-    pos: Position
+export type ResetCmd = {
+    setting?: ms.game.Setting
+    cheating?: boolean
 }
 
 export type GameInstance = {
-    shape: GameShape
-    mines: Mine[]
+    shape: RefObject<GameShape>
+    tiles: Tile[]
     state: GameState
-    resetGame: () => void
-    changeSetting: (setting?: GameSetting) => void
-    clickMine: (mine: Mine) => void
+    metrics: GameMetrics
     gameTime: number
+    flagCount: number
+    cheatingEnable: boolean
+    resetGame: (cmd?: ResetCmd) => void
+    openTile: (tile: Tile) => boolean
+    openTiles: (tile: Tile) => boolean
+    clearPressing: () => void
+    pressTile: (tile: Tile) => void
+    pressTiles: (tile: Tile) => void
+    changeFlag: (tile: Tile) => void
 }
 
-const computeShape = (setting: GameSetting): GameShape => {
+const computeShape = (setting: ms.game.Setting): GameShape => {
     const { level = 'beginner' } = setting || {}
     if (level === 'beginner') {
         return { width: 9, height: 9, mineCount: 10 }
@@ -51,112 +40,178 @@ const computeShape = (setting: GameSetting): GameShape => {
     }
 }
 
-const iterateAround = (shape: GameShape, mines: Mine[], target: Mine, doSomething: (m: Mine) => void) => {
-    const { width, height } = shape || {}
-    const { pos: [x, y] } = target
-    for (let i = Math.max(0, x - 1); i <= Math.min(width - 1, x + 1); i++) {
-        for (let j = Math.max(0, y - 1); j <= Math.min(height - 1, y + 1); j++) {
-            if (i === x && j === y) continue
-            doSomething?.(mines[j * width + i])
-        }
-    }
-}
-
-const resetPosition = (shape: GameShape, mines: Mine[], firstClickPos: Position): Mine[] => {
+const resetPosition = (shape: GameShape, tiles: Tile[], firstClickPos: Position): Tile[] => {
     const { width, height, mineCount } = shape || {}
     const [x, y] = firstClickPos || []
     const clickIdx = y * width + x
     const length = width * height
 
-    // Fill mines
+    // Fill tiles
     repeat(mineCount, () => {
         while (true) {
             const mineIdx = Math.floor(Math.random() * length)
-            if (mineIdx === clickIdx || mines[mineIdx].mine) continue
-            mines[mineIdx].mine = true
+            if (mineIdx === clickIdx || tiles[mineIdx].mine) continue
+            tiles[mineIdx].mine = true
             break
         }
     })
 
-    // Calculate around
-    mines.forEach(mine => {
-        let count = 0
-        iterateAround(shape, mines, mine, another => another.mine && count++)
-        mine.around = count
+    // Count around
+    tiles.forEach(tile => {
+        const count = countNeighbor(shape, tiles, tile, t => t.mine)
+        tile.around = count
     })
-    return mines
+    return tiles
 }
 
-export const useGame = (setting: GameSetting): GameInstance => {
-    const [$setting, setSetting] = useState(setting)
-    const shape = useMemo(() => computeShape($setting), [$setting])
-    const [mines, setMines] = useState([])
+const computeSweepCount = (shape: GameShape) => {
+    const { width, height, mineCount } = shape || {}
+    return (width ?? 0) * (height ?? 0) - (mineCount ?? 0)
+}
+
+export const useGame = (): GameInstance => {
+    const setting = useRef<ms.game.Setting>()
+    const shape = useRef<GameShape>()
+    const needSweepCount = useMemo(() => computeSweepCount(shape.current), [shape.current])
+    const [cheatingEnable, setCheatingEnable] = useState(false)
+    const [tiles, setTiles] = useState<Tile[]>([])
     const [state, setState] = useState<GameState>()
+    const [
+        flagCount,
+        { inc: increaseFlag, dec: decreaseFlag, reset: resetFlag },
+    ] = useCounter(0)
+    const [metrics, setMetrics] = useState<GameMetrics>()
     const {
         time: gameTime,
         start: startTimeCount,
-        end: endTimeCount
-    } = useCounter()
+        end: endTimeCount,
+        reset: resetTime,
+    } = useTimeCounter()
 
-    const resetGame = () => {
-        let mines: Mine[] = []
-        if (shape) {
-            const { width, height } = shape
-            const length = width * height
-            mines = fillWith(length, idx => {
-                const x = idx % width
-                const y = Math.floor(idx / width)
-                return { state: 'unknown', mine: false, around: 0, pos: [x, y] }
-            })
+    const resetGame = (cmd?: ResetCmd) => {
+        const { setting: newSetting, cheating } = cmd || {}
+        let settingVal = setting.current
+        let shapeVal = shape.current
+        if (newSetting) {
+            settingVal = setting.current = newSetting
+            shapeVal = shape.current = computeShape(newSetting)
         }
-        endTimeCount(true)
-        setMines(mines)
+        if (!settingVal || !shapeVal) {
+            return
+        }
+
+        if (cheating) {
+            // todo 
+        }
+        resetFlag()
+        resetTime()
         setState('initial')
+        setMetrics(null)
+
+        let tiles: Tile[] = []
+        const { width, height } = shapeVal
+        const length = width * height
+        tiles = fillWith(length, idx => {
+            const x = idx % width
+            const y = Math.floor(idx / width)
+            return { state: 'unknown', mine: false, around: 0, pos: [x, y] }
+        })
+        setTiles(tiles)
     }
 
-    useEffect(resetGame, [$setting])
-    useMount(resetGame)
-
     const startGame = (firstClickPos?: Position) => {
-        resetPosition(shape, mines, firstClickPos)
+        resetPosition(shape.current, tiles, firstClickPos)
         setState('running')
         startTimeCount()
     }
 
-    const endGame = (mine: Mine) => {
+    const doOpen = (tile: Tile) => {
+        if (tile.state === 'open' || tile.state === 'flag') return
+        tile.state = 'open'
+        !tile.around && iterateNeighbor(shape.current, tiles, tile, doOpen)
+    }
+
+    const endGame = (state: GameState & ('win' | 'dead')) => {
         endTimeCount()
-        mine.state = 'boom'
-        setState('dead')
+        const metrics = calculateMetrics(tiles, shape.current)
+        setMetrics(metrics)
+        setState(state)
+        setCheatingEnable(true)
     }
 
-    const doOpen = (mine: Mine) => {
-        if (mine.state === 'open') return
-        mine.state = 'open'
-        !mine.around && iterateAround(shape, mines, mine, doOpen)
+    const checkWin = () => {
+        const openCount = tiles.filter(t => t.state === 'open')?.length ?? 0
+        openCount === needSweepCount && endGame('win')
     }
 
-    const doFlag = (mine: Mine) => {
-
-    }
-
-    const clickMine = (mine: Mine) => {
-        if (state === 'initial') {
-            startGame(mine?.pos)
-        } else if (state !== 'running') {
-            return
+    const openTile = (tile: Tile): boolean => {
+        if (state !== 'initial' && state !== 'running') return false
+        clearPressing()
+        state === 'initial' && startGame(tile.pos)
+        if (tile.state !== 'unknown') return false
+        if (tile.mine) {
+            tile.state = 'boom'
+            endGame('dead')
+            return false
+        } else {
+            doOpen(tile)
+            checkWin()
+            return true
         }
-        if (mine.state === 'unknown') {
-            mine.mine ? endGame(mine) : doOpen(mine)
+    }
+
+    const openTiles = (tile: Tile): boolean => {
+        if (state !== 'initial' && state !== 'running') return false
+        clearPressing()
+        const flagCount = countNeighbor(shape.current, tiles, tile, t => t.state === 'flag')
+        if (flagCount !== tile.around) return false
+        let effective = false
+        iterateNeighbor(shape.current, tiles, tile, t => effective = openTile(t) || effective)
+        return effective
+    }
+
+    const changeFlag = (tile: Tile) => {
+        if (state !== 'running' || setting.current?.forceNf) return
+        clearPressing()
+        if (tile.state === 'unknown') {
+            tile.state = 'flag'
+            increaseFlag()
+        } else if (tile.state === 'flag') {
+            tile.state = 'unknown'
+            decreaseFlag()
         }
+    }
+
+    const clearPressing = () => {
+        tiles.filter(t => t.pressing).forEach(t => t.pressing = false)
+    }
+
+    const pressTile = (tile: Tile) => {
+        if (state !== 'running') return
+        clearPressing()
+        tile.pressing = true
+    }
+
+    const pressTiles = (tile: Tile) => {
+        if (state !== 'running') return
+        pressTile(tile)
+        iterateNeighbor(shape.current, tiles, tile, t => t.pressing = true)
     }
 
     return {
         shape,
-        mines,
+        tiles,
         state,
-        resetGame,
-        changeSetting: setSetting,
-        clickMine,
+        metrics,
         gameTime,
+        flagCount,
+        cheatingEnable,
+        resetGame,
+        openTile,
+        openTiles,
+        clearPressing,
+        pressTile,
+        pressTiles,
+        changeFlag,
     }
 }

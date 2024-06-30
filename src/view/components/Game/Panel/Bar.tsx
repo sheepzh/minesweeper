@@ -1,12 +1,14 @@
 import { classNames } from "@util/style"
-import React from "react"
+import React, { useEffect, useMemo, useState } from "react"
+import { useGameState } from "../context"
 
 const calculateDigits = (value: number): [number | '-', number, number] => {
     if (value >= 999) return [9, 9, 9]
     if (value < 0) {
         if (value <= -99) return ['-', 9, 9]
-        const b = Math.ceil(value / 10)
-        const c = Math.ceil(value % 10)
+        value = -value
+        const b = Math.floor(value / 10)
+        const c = value % 10
         return ['-', b, c]
     }
     const a = Math.floor(value / 100)
@@ -16,28 +18,58 @@ const calculateDigits = (value: number): [number | '-', number, number] => {
 }
 
 const DigitCard = (props: { value: number }) => {
-    const { value = 0 } = props
-    const digits = calculateDigits(value)
+    let { value = 0 } = props
+    value = Math.ceil(value)
+    const digits = useMemo(() => calculateDigits(value), [value])
     return (
         <div className="digit-outer">
-            {digits.map(d => (
-                <div className={classNames('digit-item', `digit-${d}`)} />
+            {digits.map((d, i) => (
+                <div key={`digit-${i}`} className={classNames('digit-item', `digit-${d}`)} />
             ))}
+        </div>
+    )
+}
+
+const Emoji = (props: { barPressing: boolean, tilePressing: boolean }) => {
+    const { barPressing, tilePressing } = props
+    const gameState = useGameState()
+    return (
+        <div className="emoji-outer">
+            <div
+                className={classNames(
+                    "emoji",
+                    gameState,
+                    tilePressing && 'tile-pressing',
+                    barPressing && 'bar-pressing',
+                )}
+            />
         </div>
     )
 }
 
 type Props = {
     time: number
-    flag: number
+    leftFlag: number
+    tilePressing: boolean
     onReset?: () => void
 }
 
 const Bar = (props: Props) => {
-    const { time = 0, flag, onReset } = props
+    const [barPressing, setBarPressing] = useState(false)
+    const { time = 0, leftFlag, onReset, tilePressing } = props
+    useEffect(() => {
+        !barPressing && onReset?.()
+    }, [barPressing])
     return (
-        <div className="mine-bar" onClick={onReset}>
-            <DigitCard value={flag} />
+        <div
+            className="tile-bar"
+            onClick={onReset}
+            onMouseDown={ev => ev.button === 0 && setBarPressing(true)}
+            onMouseUp={ev => ev.button === 0 && setBarPressing(false)}
+            onMouseOut={ev => ev.button === 0 && setBarPressing(false)}
+        >
+            <DigitCard value={leftFlag} />
+            <Emoji barPressing={barPressing} tilePressing={tilePressing} />
             <DigitCard value={time / 1000} />
         </div>
     )
