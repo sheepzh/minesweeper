@@ -1,7 +1,6 @@
 import { fillWith, repeat } from "@util/array"
 import { useCounter } from "ahooks"
-import { Ref, RefObject, useEffect, useMemo, useRef, useState } from "react"
-import { useTimeCounter } from "./useTimeCounter"
+import { RefObject, useMemo, useRef, useState } from "react"
 import { countNeighbor, GameShape, GameState, iterateNeighbor, Position, Tile } from "./common"
 import { calculateMetrics, GameMetrics } from "./metrics"
 
@@ -15,7 +14,6 @@ export type GameInstance = {
     tiles: Tile[]
     state: GameState
     metrics: GameMetrics
-    gameTime: number
     flagCount: number
     cheatingEnable: boolean
     resetGame: (cmd?: ResetCmd) => void
@@ -81,12 +79,6 @@ export const useGame = (): GameInstance => {
         { inc: increaseFlag, dec: decreaseFlag, reset: resetFlag },
     ] = useCounter(0)
     const [metrics, setMetrics] = useState<GameMetrics>()
-    const {
-        time: gameTime,
-        start: startTimeCount,
-        end: endTimeCount,
-        reset: resetTime,
-    } = useTimeCounter()
 
     const resetGame = (cmd?: ResetCmd) => {
         const { setting: newSetting, cheating } = cmd || {}
@@ -104,7 +96,6 @@ export const useGame = (): GameInstance => {
             // todo 
         }
         resetFlag()
-        resetTime()
         setState('initial')
         setMetrics(null)
 
@@ -122,7 +113,6 @@ export const useGame = (): GameInstance => {
     const startGame = (firstClickPos?: Position) => {
         resetPosition(shape.current, tiles, firstClickPos)
         setState('running')
-        startTimeCount()
     }
 
     const doOpen = (tile: Tile) => {
@@ -132,7 +122,6 @@ export const useGame = (): GameInstance => {
     }
 
     const endGame = (state: GameState & ('win' | 'dead')) => {
-        endTimeCount()
         const metrics = calculateMetrics(tiles, shape.current)
         setMetrics(metrics)
         setState(state)
@@ -203,7 +192,6 @@ export const useGame = (): GameInstance => {
         tiles,
         state,
         metrics,
-        gameTime,
         flagCount,
         cheatingEnable,
         resetGame,

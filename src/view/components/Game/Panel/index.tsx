@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"
 import { Tile } from "@core/common"
-import Tiles from "./Tiles"
 import Bar from "./Bar"
 import { useGameContext } from "../context"
 import { ClickAction } from "@core/useClickCounter"
@@ -8,6 +7,7 @@ import "./style.sass"
 import Menu from "./Menu"
 import { useLocale } from "@view/useLocale"
 import { useOption } from "@view/useOption"
+import TileCell from "./TileCell"
 
 type Action = {
     target: Tile
@@ -21,9 +21,10 @@ const calcZoom = (resolution: number = 0): number => {
 
 
 const Panel = () => {
-    const { instance, clickCounter, reset } = useGameContext()
+    const { instance, clickCounter, timeCounter, reset } = useGameContext()
+    const { time: gameTime } = timeCounter || {}
     const {
-        tiles, shape, gameTime, state, flagCount,
+        tiles, shape, state, flagCount,
         openTile, openTiles,
         pressTile, pressTiles, clearPressing,
         changeFlag,
@@ -55,6 +56,10 @@ const Panel = () => {
         }
     }
 
+    useEffect(() => {
+        state === 'dead' && timeCounter.end()
+    }, [state])
+
     function onTilesMouseUp() {
         const { target, click } = action || {}
         if (!click || !target) return
@@ -64,6 +69,7 @@ const Panel = () => {
         }
         let effective = false
         if (click === 'left') {
+            timeCounter.start()
             effective = openTile(target)
         } else if (click === 'double') {
             effective = openTiles(target)
@@ -99,14 +105,21 @@ const Panel = () => {
                         tilePressing={!!action?.click}
                         onReset={reset}
                     />
-                    <Tiles
-                        value={tiles}
-                        shape={shape.current}
-                        onMouseDown={onTilesMouseDown}
-                        onMouseEnter={onTilesMouseEnter}
-                        onMouseLeave={onTilesMouseLeave}
+                    <div
+                        className="tile-grid"
+                        style={{ gridTemplateColumns: `repeat(${shape.current?.width}, ${100 / shape.current?.width}%)` }}
                         onMouseUp={onTilesMouseUp}
-                    />
+                    >
+                        {tiles?.map((tile, idx) => (
+                            <TileCell
+                                key={`mine_${idx}`}
+                                value={tile}
+                                onMouseDown={e => onTilesMouseDown(tile, e)}
+                                onMouseEnter={() => onTilesMouseEnter(tile)}
+                                onMouseLeave={() => onTilesMouseLeave()}
+                            />
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

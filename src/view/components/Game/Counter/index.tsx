@@ -60,9 +60,10 @@ const calculateResult = (metrics: GameMetrics, time: number, clickCounter: Click
 }
 
 const Scoreboard = () => {
-    const { clickCounter, instance } = useGameContext()
-    const { gameTime, metrics, flagCount } = instance || {}
+    const { clickCounter, timeCounter, instance } = useGameContext()
+    const { metrics, flagCount } = instance || {}
     const { left, right, double } = clickCounter || {}
+    const { time: gameTime } = timeCounter || {}
     const {
         expectedTime,
         bv3, bv3Speed,

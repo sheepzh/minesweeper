@@ -46,7 +46,7 @@ const Game = () => {
                 <Panel />
                 <Counter />
             </div>
-        </GameContext.Provider>
+        </GameContext.Provider >
     )
 }
 

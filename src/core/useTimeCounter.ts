@@ -13,6 +13,8 @@ export const useTimeCounter = (): TimeCounter => {
     const timer = useRef<NodeJS.Timeout>()
 
     const start = () => {
+        if (timer.current) return
+
         setTime(0)
         startTime.current = Date.now()
         timer.current = setInterval(() => {
@@ -22,7 +24,9 @@ export const useTimeCounter = (): TimeCounter => {
     }
 
     const end = () => {
-        timer.current && clearInterval(timer.current)
+        if (!timer.current) return
+        clearInterval(timer.current)
+        timer.current = null
     }
 
     const reset = () => {
