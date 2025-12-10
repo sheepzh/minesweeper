@@ -58,7 +58,7 @@ const Panel = () => {
 
     useEffect(() => {
         state === 'dead' && timeCounter.end()
-    }, [state])
+    }, [state, timeCounter])
 
     function onTilesMouseUp() {
         const { target, click } = action || {}
