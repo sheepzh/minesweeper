@@ -41,7 +41,7 @@ const Panel = () => {
         } else if (click === 'double') {
             pressTiles(target)
         }
-    }, [action.target, action.click, clearPressing, pressTile, pressTiles])
+    }, [action.target, action.click])
 
     const onTilesMouseDown = useCallback((tile: Tile, e: React.MouseEvent) => {
         if (e.button === 2 && e.buttons === 2 && tile) {
@@ -58,9 +58,9 @@ const Panel = () => {
 
     useEffect(() => {
         state === 'dead' && timeCounter.end()
-    }, [state, timeCounter])
+    }, [state])
 
-    const onTilesMouseUp = useCallback(function() {
+    function onTilesMouseUp() {
         const { target, click } = action || {}
         if (!click || !target) return
         if (state !== 'initial' && state !== 'running') return
@@ -78,7 +78,7 @@ const Panel = () => {
         }
         effective && increaseEffective()
         setAction({ click: null, target: null })
-    }, [action, state, increaseClick, timeCounter, openTile, openTiles, changeFlag, increaseEffective])
+    }
 
     const onTilesMouseEnter = useCallback((tile: Tile) => setAction({ target: tile, click: action?.click }), [action?.click])
     const onTilesMouseLeave = useCallback(() => setAction({ click: null, target: null }), [])

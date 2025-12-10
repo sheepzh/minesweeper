@@ -1,6 +1,6 @@
 import { classNames } from "@util/style"
 import { useLocale } from "@view/useLocale"
-import React, { memo, ReactNode, useCallback, useEffect, useRef, useState } from "react"
+import React, { memo, ReactNode, useEffect, useRef, useState } from "react"
 import { useGameContext } from "../context"
 import { useOption } from "@view/useOption"
 import "./menu.sass"
@@ -57,19 +57,19 @@ const Menu = () => {
     const level = option?.level
     const [openMenu, setOpenMenu] = useState<MenuGroup>()
     const container = useRef<HTMLDivElement>()
-    const toggleMenu = useCallback((newVal: MenuGroup | null) => setOpenMenu(newVal === openMenu ? null : newVal), [openMenu])
+    const toggleMenu = (newVal: MenuGroup | null) => setOpenMenu(newVal === openMenu ? null : newVal)
     useEffect(() => {
         const handleClick = (ev: MouseEvent) => {
             const target = ev.target as HTMLElement
-            !container.current?.contains?.(target) && toggleMenu(null)
+            !container.current?.contains?.(target) && setOpenMenu(null)
         }
         window.addEventListener('click', handleClick)
         return () => window.removeEventListener('click', handleClick)
-    }, [toggleMenu])
-    const closeThen = useCallback(() => {
+    }, [])
+    const closeThen = () => {
         setOpenMenu(null)
         return true
-    }, [])
+    }
     return (
         <div className="menu-container" ref={container}>
             <Group

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react"
+import React, { useEffect } from "react"
 import Panel from "./Panel"
 import Counter from "./Counter"
 import { GameContext, GameContextInfo, useGameContextProvider } from "./context"
@@ -6,31 +6,31 @@ import { OptionContextInfo, useOption } from "@view/useOption"
 
 const useKeyboardListener = (context: GameContextInfo, optionContext: OptionContextInfo) => {
     const { toggleVisible, setLevel } = optionContext
-    const handler = useCallback((ev: KeyboardEvent) => {
-        const key = ev.key
-        let processed = true
-        if (key === 'F2') {
-            context.reset()
-        } else if (key === 'F3') {
-            context.reset({ cheating: true })
-        } else if (key === 'F5') {
-            toggleVisible()
-        } else if (key === '1') {
-            setLevel('beginner')
-        } else if (key === '2') {
-            setLevel('intermediate')
-        } else if (key === '3') {
-            setLevel('expert')
-        } else {
-            processed = false
-        }
-        processed && ev.preventDefault()
-    }, [context, toggleVisible, setLevel])
 
     useEffect(() => {
+        const handler = (ev: KeyboardEvent) => {
+            const key = ev.key
+            let processed = true
+            if (key === 'F2') {
+                context.reset()
+            } else if (key === 'F3') {
+                context.reset({ cheating: true })
+            } else if (key === 'F5') {
+                toggleVisible()
+            } else if (key === '1') {
+                setLevel('beginner')
+            } else if (key === '2') {
+                setLevel('intermediate')
+            } else if (key === '3') {
+                setLevel('expert')
+            } else {
+                processed = false
+            }
+            processed && ev.preventDefault()
+        }
         window.addEventListener('keydown', handler)
         return () => window.removeEventListener('keydown', handler)
-    }, [handler])
+    }, [context, toggleVisible, setLevel])
 }
 
 const Game = () => {
