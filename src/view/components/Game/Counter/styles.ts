@@ -1,0 +1,39 @@
+import { css } from '@emotion/react';
+
+export const scoreboardStyles = css`
+  width: fit-content;
+  height: fit-content;
+
+  .score-item {
+    height: 16px;
+    display: flex;
+    font-size: 12px;
+    width: fit-content;
+    box-sizing: border-box;
+    background-color: #c0c0c0;
+    border-top: 1px solid #808080;
+
+    .score-label {
+      width: 60px;
+    }
+
+    .score-value {
+      width: 75px;
+    }
+
+    .score-label,
+    .score-value {
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      padding-left: 3px;
+      padding-top: 1px;
+      padding-bottom: 1px;
+      border-right: 1px solid #808080;
+    }
+
+    &:last-child {
+      border-bottom: 1px solid #808080;
+    }
+  }
+`;

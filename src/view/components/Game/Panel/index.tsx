@@ -1,9 +1,10 @@
+/** @jsxImportSource @emotion/react */
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { Tile } from "@core/common"
 import Bar from "./Bar"
 import { useGameContext } from "../context"
 import { ClickAction } from "@core/useClickCounter"
-import "./style.sass"
+import { gameAreaStyles, tileGridStyles } from "./styles"
 import Menu from "./Menu"
 import { useLocale } from "@view/useLocale"
 import { useOption } from "@view/useOption"
@@ -105,7 +106,7 @@ const Panel = () => {
             <div className="window-body" style={{ margin: 3, marginBottom: 0, marginTop: 0 }}>
                 <Menu />
                 <div
-                    className='game-area'
+                    css={gameAreaStyles}
                     style={{ zoom }}
                     onContextMenu={e => e.preventDefault()}
                 >
@@ -116,7 +117,7 @@ const Panel = () => {
                         onReset={reset}
                     />
                     <div
-                        className="tile-grid"
+                        css={tileGridStyles}
                         style={{ gridTemplateColumns }}
                         onMouseUp={onTilesMouseUp}
                     >

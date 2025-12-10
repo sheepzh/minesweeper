@@ -1,6 +1,7 @@
+/** @jsxImportSource @emotion/react */
 import React, { memo } from "react"
 import LocaleSelect from "./LocaleSelect"
-import "./style.sass"
+import { actionContainerStyles } from "./styles"
 import { useLocale } from "@view/useLocale"
 import Resolution from "./Resolution"
 
@@ -24,7 +25,7 @@ const Setting = memo((props: Props) => {
                     </div>
                 </div>
                 <div className="window-body" style={{ height: 200 }}>
-                    <div className="action-container">
+                    <div css={actionContainerStyles}>
                         <LocaleSelect />
                         <Resolution />
                     </div>

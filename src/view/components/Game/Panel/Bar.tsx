@@ -1,6 +1,8 @@
+/** @jsxImportSource @emotion/react */
 import { classNames } from "@util/style"
 import React, { memo, useEffect, useMemo, useState } from "react"
 import { useGameState } from "../context"
+import { tileBarStyles, digitOuterStyles, digitItemStyles, emojiOuterStyles, emojiStyles } from "./styles"
 
 const calculateDigits = (value: number): [number | '-', number, number] => {
     if (value >= 999) return [9, 9, 9]
@@ -22,9 +24,9 @@ const DigitCard = memo((props: { value: number }) => {
     value = Math.ceil(value)
     const digits = useMemo(() => calculateDigits(value), [value])
     return (
-        <div className="digit-outer">
+        <div css={digitOuterStyles}>
             {digits.map((d, i) => (
-                <div key={`digit-${i}`} className={classNames('digit-item', `digit-${d}`)} />
+                <div key={`digit-${i}`} css={digitItemStyles} className={classNames('digit-item', `digit-${d}`)} />
             ))}
         </div>
     )
@@ -34,8 +36,9 @@ const Emoji = memo((props: { barPressing: boolean, tilePressing: boolean }) => {
     const { barPressing, tilePressing } = props
     const gameState = useGameState()
     return (
-        <div className="emoji-outer">
+        <div css={emojiOuterStyles}>
             <div
+                css={emojiStyles}
                 className={classNames(
                     "emoji",
                     gameState,
@@ -62,7 +65,7 @@ const Bar = (props: Props) => {
     }, [barPressing])
     return (
         <div
-            className="tile-bar"
+            css={tileBarStyles}
             onClick={onReset}
             onMouseDown={ev => ev.button === 0 && setBarPressing(true)}
             onMouseUp={ev => ev.button === 0 && setBarPressing(false)}

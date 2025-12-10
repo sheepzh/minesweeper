@@ -1,9 +1,10 @@
+/** @jsxImportSource @emotion/react */
 import React, { memo, useMemo } from "react"
 import { useGameContext } from "../context"
 import Item from "./Item"
 import { GameMetrics } from "@core/metrics"
 import { ClickCounter } from "@core/useClickCounter"
-import './style.sass'
+import { scoreboardStyles } from './styles'
 
 type Result = {
     bv3: string
@@ -77,7 +78,7 @@ const Scoreboard = () => {
                     Counter
                 </div>
             </div>
-            <div className="scoreboard window-body" style={{ margin: "0px 3px" }}>
+            <div css={scoreboardStyles} className="scoreboard window-body" style={{ margin: "0px 3px" }}>
                 <Item label="RTime" value={formatTime(gameTime)} primary />
                 <Item label="Est RTime" value={expectedTime} />
                 <Item label="3BV" value={bv3} />

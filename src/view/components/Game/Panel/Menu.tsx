@@ -1,9 +1,10 @@
+/** @jsxImportSource @emotion/react */
 import { classNames } from "@util/style"
 import { useLocale } from "@view/useLocale"
 import React, { memo, ReactNode, useEffect, useRef, useState } from "react"
 import { useGameContext } from "../context"
 import { useOption } from "@view/useOption"
-import "./menu.sass"
+import { menuContainerStyles, menuGroupStyles } from "./menuStyles"
 
 type ItemProps = {
     label: string
@@ -39,7 +40,7 @@ const Separator = () => {
 const Group = memo((props: GroupProps) => {
     const { label, open, children, onClick } = props
     return (
-        <div className={classNames('menu-group', open && 'open')}>
+        <div css={menuGroupStyles} className={classNames('menu-group', open && 'open')}>
             <div className="group-label" onClick={onClick}>
                 {label}
             </div>
@@ -71,7 +72,7 @@ const Menu = () => {
         return true
     }
     return (
-        <div className="menu-container" ref={container}>
+        <div css={menuContainerStyles} ref={container}>
             <Group
                 label={t(msg => msg.menu.game.label)}
                 open={openMenu === 'game'}

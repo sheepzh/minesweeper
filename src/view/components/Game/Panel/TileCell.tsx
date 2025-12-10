@@ -1,7 +1,9 @@
+/** @jsxImportSource @emotion/react */
 import { Tile } from "@core/common"
 import { classNames } from "@util/style"
 import React, { memo } from "react"
 import { useGameState } from "../context"
+import { tileCellStyles } from "./styles"
 
 type Props = {
     value: Tile
@@ -32,6 +34,7 @@ const TileCell = (props: Props) => {
 
     return (
         <div
+            css={tileCellStyles}
             className={classNames(
                 BASE_CLZ_NAME,
                 state,
