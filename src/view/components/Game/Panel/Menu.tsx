@@ -57,7 +57,7 @@ const Menu = () => {
     const level = option?.level
     const [openMenu, setOpenMenu] = useState<MenuGroup>()
     const container = useRef<HTMLDivElement>()
-    const toggleMenu = useCallback((newVal: MenuGroup) => setOpenMenu(newVal === openMenu ? null : newVal), [openMenu])
+    const toggleMenu = useCallback((newVal: MenuGroup | null) => setOpenMenu(newVal === openMenu ? null : newVal), [openMenu])
     useEffect(() => {
         const handleClick = (ev: MouseEvent) => {
             const target = ev.target as HTMLElement
