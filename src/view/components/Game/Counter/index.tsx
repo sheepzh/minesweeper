@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React, { memo, useMemo } from "react"
 import { useGameContext } from "../context"
 import Item from "./Item"
 import { GameMetrics } from "@core/metrics"
@@ -69,7 +69,7 @@ const Scoreboard = () => {
         bv3, bv3Speed,
         ioe, rqp,
         throughput, correctness,
-    } = useMemo(() => calculateResult(metrics, gameTime, clickCounter), [metrics])
+    } = useMemo(() => calculateResult(metrics, gameTime, clickCounter), [metrics, gameTime, clickCounter])
     return (
         <div className="window" style={{ height: 'fit-content' }}>
             <div className="title-bar">
@@ -109,4 +109,4 @@ const Scoreboard = () => {
     )
 }
 
-export default Scoreboard
+export default memo(Scoreboard)

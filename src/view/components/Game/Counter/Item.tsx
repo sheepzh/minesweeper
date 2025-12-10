@@ -1,5 +1,5 @@
 import { classNames } from "@util/style"
-import React from "react"
+import React, { memo } from "react"
 
 type Props = {
     label: string
@@ -7,7 +7,7 @@ type Props = {
     primary?: boolean
 }
 
-const Item = (props: Props) => {
+const Item = memo((props: Props) => {
     const { label, value, primary } = props
     return (
         <div className={classNames('score-item', primary && 'primary')}>
@@ -19,6 +19,6 @@ const Item = (props: Props) => {
             </div>
         </div>
     )
-}
+})
 
 export default Item

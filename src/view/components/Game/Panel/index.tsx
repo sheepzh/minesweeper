@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { Tile } from "@core/common"
 import Bar from "./Bar"
 import { useGameContext } from "../context"
@@ -41,7 +41,7 @@ const Panel = () => {
         } else if (click === 'double') {
             pressTiles(target)
         }
-    }, [action.target, action.click])
+    }, [action.target, action.click, clearPressing, pressTile, pressTiles])
 
     const onTilesMouseDown = useCallback((tile: Tile, e: React.MouseEvent) => {
         if (e.button === 2 && e.buttons === 2 && tile) {
@@ -58,7 +58,7 @@ const Panel = () => {
 
     useEffect(() => {
         state === 'dead' && timeCounter.end()
-    }, [state])
+    }, [state, timeCounter])
 
     const onTilesMouseUp = useCallback(function() {
         const { target, click } = action || {}
@@ -84,6 +84,16 @@ const Panel = () => {
     const onTilesMouseLeave = useCallback(() => setAction({ click: null, target: null }), [])
     const { t } = useLocale()
     const { option } = useOption()
+    
+    const zoom = useMemo(() => calcZoom(option?.resolution), [option?.resolution])
+    const gridTemplateColumns = useMemo(() => 
+        `repeat(${shape.current?.width}, ${100 / shape.current?.width}%)`,
+        [shape.current?.width]
+    )
+    const leftFlag = useMemo(() => 
+        (shape.current?.mineCount ?? 0) - (flagCount ?? 0),
+        [shape.current?.mineCount, flagCount]
+    )
 
     return (
         <div className="window" style={{ height: 'fit-content' }}>
@@ -96,18 +106,18 @@ const Panel = () => {
                 <Menu />
                 <div
                     className='game-area'
-                    style={{ zoom: calcZoom(option?.resolution) }}
+                    style={{ zoom }}
                     onContextMenu={e => e.preventDefault()}
                 >
                     <Bar
                         time={gameTime}
-                        leftFlag={(shape.current?.mineCount ?? 0) - (flagCount ?? 0)}
+                        leftFlag={leftFlag}
                         tilePressing={!!action?.click}
                         onReset={reset}
                     />
                     <div
                         className="tile-grid"
-                        style={{ gridTemplateColumns: `repeat(${shape.current?.width}, ${100 / shape.current?.width}%)` }}
+                        style={{ gridTemplateColumns }}
                         onMouseUp={onTilesMouseUp}
                     >
                         {tiles?.map((tile, idx) => (

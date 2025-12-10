@@ -1,4 +1,4 @@
-import React from "react"
+import React, { memo } from "react"
 import LocaleSelect from "./LocaleSelect"
 import "./style.sass"
 import { useLocale } from "@view/useLocale"
@@ -8,7 +8,7 @@ type Props = {
     onClose: () => void
 }
 
-const Setting = (props: Props) => {
+const Setting = memo((props: Props) => {
     const { onClose } = props
     const { t } = useLocale()
 
@@ -32,6 +32,6 @@ const Setting = (props: Props) => {
             </div>
         </div>
     )
-}
+})
 
 export default Setting

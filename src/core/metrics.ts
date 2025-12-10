@@ -25,15 +25,22 @@ const calculateBv3 = (tiles: Tile[], shape: GameShape): [finished: number, total
 }
 
 const zeroLand = (landMatrix: boolean[], idx: number, shape: GameShape): void => {
-    if (!landMatrix[idx]) return
     const { width, height } = shape
-    landMatrix[idx] = false
-    const x = idx % width
-    const y = Math.floor(idx / width)
-    x > 0 && zeroLand(landMatrix, idx - 1, shape)
-    x < width - 1 && zeroLand(landMatrix, idx + 1, shape)
-    y > 0 && zeroLand(landMatrix, idx - width, shape)
-    y < height - 1 && zeroLand(landMatrix, idx + width, shape)
+    const stack = [idx]
+    
+    while (stack.length > 0) {
+        const current = stack.pop()
+        if (!landMatrix[current]) continue
+        
+        landMatrix[current] = false
+        const x = current % width
+        const y = Math.floor(current / width)
+        
+        if (x > 0) stack.push(current - 1)
+        if (x < width - 1) stack.push(current + 1)
+        if (y > 0) stack.push(current - width)
+        if (y < height - 1) stack.push(current + width)
+    }
 }
 
 const dfsIslands = (landMatrix: boolean[], shape: GameShape): number => {
