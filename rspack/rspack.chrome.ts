@@ -1,5 +1,5 @@
 import { defineConfig } from '@rspack/cli';
-import { rspack } from '@rspack/core';
+import { rspack, Compiler } from '@rspack/core';
 import * as path from 'path';
 import * as fs from 'fs';
 import baseConfig from './rspack.config';
@@ -16,7 +16,7 @@ const marketPkgPath = path.resolve(__dirname, '..', 'market_packages');
 class WriteJsonPlugin {
   name = 'WriteJsonPlugin';
   
-  apply(compiler: any) {
+  apply(compiler: Compiler) {
     compiler.hooks.afterEmit.tap(this.name, () => {
       // Write manifest.json
       const manifestPath = path.join(outputPath, 'manifest.json');
