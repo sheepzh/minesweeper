@@ -2,38 +2,37 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "@emotion/react",
-    "baseUrl": ".",
     "target": "ES2022",
     "module": "commonjs",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "strict": false,
+    "strict": true,
     "skipLibCheck": true,
     "paths": {
       "@core/*": [
-        "src/core/*"
+        "./src/core/*"
       ],
       "@util/*": [
-        "src/util/*"
+        "./src/util/*"
       ],
       "@view/*": [
-        "src/view/*"
+        "./src/view/*"
       ],
       "@i18n/*": [
-        "src/i18n/*"
+        "./src/i18n/*"
       ],
       "@ext/*": [
-        "src/extension/*"
+        "./src/extension/*"
       ],
       "@api/*": [
-        "src/api/*"
+        "./src/api/*"
       ],
       "@src/*": [
-        "src/*"
+        "./src/*"
       ],
       "*": [
-        "types/*"
+        "./types/*"
       ]
     }
   },

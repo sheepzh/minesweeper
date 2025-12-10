@@ -1,59 +1,59 @@
-import { defineConfig } from '@rspack/cli';
-import { rspack, Compiler } from '@rspack/core';
-import * as path from 'path';
-import * as fs from 'fs';
-import baseConfig from './rspack.config';
-import manifest from '../src/extension/manifest';
-import i18nChrome from '../src/i18n/chrome';
-import packageInfo from '../package.json';
+/**
+ * Build for chrome extension
+ */
+import type { RspackPluginInstance } from "@rspack/core"
+import { CopyRspackPlugin } from "@rspack/core"
+import baseConfig from "./rspack.base"
+import { GenerateJsonPlugin } from "./plugins/generate-json"
+import { FileManagerPlugin } from "./plugins/file-manager"
+import manifest from "../src/extension/manifest"
+import path from "path"
+import i18nChrome from "../src/i18n/chrome"
+import packageInfo from "../package.json"
+const { name, version } = packageInfo
 
-const { name, version } = packageInfo;
+const outputPath = path.resolve(__dirname, '..', 'dist_mv3')
+const marketPkgPath = path.resolve(__dirname, '..', 'market_packages')
+const normalZipFilePath = path.resolve(marketPkgPath, `${name}-${version}.mv3.zip`)
 
-const outputPath = path.resolve(__dirname, '..', 'dist_mv3');
-const marketPkgPath = path.resolve(__dirname, '..', 'market_packages');
+const localeJsonFiles = Object.entries(i18nChrome)
+    .map(([locale, message]) => new GenerateJsonPlugin(`_locales/${locale}/messages.json`, message))
 
-// Custom plugin to write JSON files
-class WriteJsonPlugin {
-  name = 'WriteJsonPlugin';
-  
-  apply(compiler: Compiler) {
-    compiler.hooks.afterEmit.tap(this.name, () => {
-      // Write manifest.json
-      const manifestPath = path.join(outputPath, 'manifest.json');
-      fs.mkdirSync(path.dirname(manifestPath), { recursive: true });
-      fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
-      
-      // Write locale files
-      Object.entries(i18nChrome).forEach(([locale, message]) => {
-        const localePath = path.join(outputPath, `_locales/${locale}/messages.json`);
-        fs.mkdirSync(path.dirname(localePath), { recursive: true });
-        fs.writeFileSync(localePath, JSON.stringify(message, null, 2));
-      });
-    });
-  }
+const fileManagerPlugin = new FileManagerPlugin({
+    events: {
+        // Archive at the end
+        onEnd: [
+            { delete: [path.join(outputPath, '*.LICENSE.txt')] },
+            // Define plugin to archive zip for different markets
+            {
+                delete: [normalZipFilePath],
+                archive: [{
+                    source: outputPath,
+                    destination: normalZipFilePath,
+                }]
+            },
+        ]
+    }
+})
+
+baseConfig.mode = 'production'
+baseConfig.output!.path = outputPath
+baseConfig.plugins!.push(
+    new GenerateJsonPlugin('manifest.json', manifest),
+    new CopyRspackPlugin({
+        patterns: [
+            {
+                from: path.join(__dirname, '..', 'asset'),
+                to: path.join(outputPath, 'asset'),
+            }
+        ]
+    }),
+    fileManagerPlugin,
+    ...localeJsonFiles,
+)
+
+if (typeof baseConfig.entry === 'object' && !Array.isArray(baseConfig.entry)) {
+    baseConfig.entry['service-worker'] = './src/extension/service-worker'
 }
 
-export default defineConfig({
-  ...baseConfig,
-  mode: 'production',
-  entry: {
-    index: './src/view/index.tsx',
-    'service-worker': './src/extension/service-worker/index.ts',
-  },
-  output: {
-    filename: '[name].js',
-    path: outputPath,
-  },
-  plugins: [
-    ...(baseConfig.plugins || []),
-    new rspack.CopyRspackPlugin({
-      patterns: [
-        {
-          from: path.join(__dirname, '..', 'asset'),
-          to: path.join(outputPath, 'asset'),
-        },
-      ],
-    }),
-    new WriteJsonPlugin(),
-  ],
-});
+export default baseConfig

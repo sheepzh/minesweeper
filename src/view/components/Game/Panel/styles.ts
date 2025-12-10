@@ -1,5 +1,34 @@
 import { css } from '@emotion/react';
 
+// Import all images
+import smileImg from './image/smile.png';
+import ohhImg from './image/ohh.png';
+import deadImg from './image/dead.png';
+import winImg from './image/win.png';
+import mineUncoverImg from './image/mine-uncover.png';
+import mineDeadImg from './image/mine-dead.png';
+import flagImg from './image/flag.png';
+import flagWrongImg from './image/flag-wrong.png';
+import open1Img from './image/open1.png';
+import open2Img from './image/open2.png';
+import open3Img from './image/open3.png';
+import open4Img from './image/open4.png';
+import open5Img from './image/open5.png';
+import open6Img from './image/open6.png';
+import open7Img from './image/open7.png';
+import open8Img from './image/open8.png';
+import digitMinusImg from './image/digit-.png';
+import digit0Img from './image/digit0.png';
+import digit1Img from './image/digit1.png';
+import digit2Img from './image/digit2.png';
+import digit3Img from './image/digit3.png';
+import digit4Img from './image/digit4.png';
+import digit5Img from './image/digit5.png';
+import digit6Img from './image/digit6.png';
+import digit7Img from './image/digit7.png';
+import digit8Img from './image/digit8.png';
+import digit9Img from './image/digit9.png';
+
 export const gameAreaStyles = css`
   height: fit-content;
   padding: 6px;
@@ -42,10 +71,10 @@ export const emojiStyles = css`
   border-radius: 1px;
   border-color: #fff #808080 #808080 #fff;
   background: center center no-repeat;
-  background-image: url("./image/smile.png");
+  background-image: url(${smileImg});
 
   &.tile-pressing {
-    background-image: url("./image/ohh.png");
+    background-image: url(${ohhImg});
   }
 
   &.bar-pressing {
@@ -57,11 +86,11 @@ export const emojiStyles = css`
   }
 
   &.dead {
-    background-image: url("./image/dead.png") !important;
+    background-image: url(${deadImg}) !important;
   }
 
   &.win {
-    background-image: url("./image/win.png") !important;
+    background-image: url(${winImg}) !important;
   }
 `;
 
@@ -81,20 +110,20 @@ export const tileCellStyles = css`
   height: 16px;
 
   &.uncover {
-    background-image: url("./image/mine-uncover.png");
+    background-image: url(${mineUncoverImg});
     border-width: 0px;
   }
 
   &.boom {
-    background-image: url("./image/mine-dead.png");
+    background-image: url(${mineDeadImg});
   }
 
   &.flag {
-    background-image: url("./image/flag.png");
+    background-image: url(${flagImg});
   }
 
   &.wrong-flag {
-    background-image: url("./image/flag-wrong.png");
+    background-image: url(${flagWrongImg});
     border-width: 0px;
   }
 
@@ -110,35 +139,35 @@ export const tileCellStyles = css`
   }
 
   &.open.open-1 {
-    background-image: url("./image/open1.png");
+    background-image: url(${open1Img});
   }
 
   &.open.open-2 {
-    background-image: url("./image/open2.png");
+    background-image: url(${open2Img});
   }
 
   &.open.open-3 {
-    background-image: url("./image/open3.png");
+    background-image: url(${open3Img});
   }
 
   &.open.open-4 {
-    background-image: url("./image/open4.png");
+    background-image: url(${open4Img});
   }
 
   &.open.open-5 {
-    background-image: url("./image/open5.png");
+    background-image: url(${open5Img});
   }
 
   &.open.open-6 {
-    background-image: url("./image/open6.png");
+    background-image: url(${open6Img});
   }
 
   &.open.open-7 {
-    background-image: url("./image/open7.png");
+    background-image: url(${open7Img});
   }
 
   &.open.open-8 {
-    background-image: url("./image/open8.png");
+    background-image: url(${open8Img});
   }
 
   &.open,
@@ -168,46 +197,46 @@ export const digitItemStyles = css`
   flex: 1;
 
   &.digit-- {
-    background-image: url("./image/digit-.png");
+    background-image: url(${digitMinusImg});
   }
 
   &.digit-0 {
-    background-image: url("./image/digit0.png");
+    background-image: url(${digit0Img});
   }
 
   &.digit-1 {
-    background-image: url("./image/digit1.png");
+    background-image: url(${digit1Img});
   }
 
   &.digit-2 {
-    background-image: url("./image/digit2.png");
+    background-image: url(${digit2Img});
   }
 
   &.digit-3 {
-    background-image: url("./image/digit3.png");
+    background-image: url(${digit3Img});
   }
 
   &.digit-4 {
-    background-image: url("./image/digit4.png");
+    background-image: url(${digit4Img});
   }
 
   &.digit-5 {
-    background-image: url("./image/digit5.png");
+    background-image: url(${digit5Img});
   }
 
   &.digit-6 {
-    background-image: url("./image/digit6.png");
+    background-image: url(${digit6Img});
   }
 
   &.digit-7 {
-    background-image: url("./image/digit7.png");
+    background-image: url(${digit7Img});
   }
 
   &.digit-8 {
-    background-image: url("./image/digit8.png");
+    background-image: url(${digit8Img});
   }
 
   &.digit-9 {
-    background-image: url("./image/digit9.png");
+    background-image: url(${digit9Img});
   }
 `;
