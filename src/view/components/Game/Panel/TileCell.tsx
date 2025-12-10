@@ -1,6 +1,6 @@
 import { Tile } from "@core/common"
 import { classNames } from "@util/style"
-import React from "react"
+import React, { memo } from "react"
 import { useGameState } from "../context"
 
 type Props = {
@@ -47,4 +47,9 @@ const TileCell = (props: Props) => {
     )
 }
 
-export default TileCell
+export default memo(TileCell, (prev, next) => {
+    // Only re-render if the tile value actually changed
+    return prev.value === next.value &&
+        prev.value.state === next.value.state &&
+        prev.value.pressing === next.value.pressing
+})

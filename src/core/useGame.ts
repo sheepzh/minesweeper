@@ -1,6 +1,6 @@
 import { fillWith, repeat } from "@util/array"
 import { useCounter } from "ahooks"
-import { RefObject, useMemo, useRef, useState } from "react"
+import { RefObject, useCallback, useMemo, useRef, useState } from "react"
 import { countNeighbor, GameShape, GameState, iterateNeighbor, Position, Tile } from "./common"
 import { calculateMetrics, GameMetrics } from "./metrics"
 
@@ -70,6 +70,7 @@ const computeSweepCount = (shape: GameShape) => {
 export const useGame = (): GameInstance => {
     const setting = useRef<ms.game.Setting>()
     const shape = useRef<GameShape>()
+    const pressingTiles = useRef<Set<Tile>>(new Set())
     const needSweepCount = useMemo(() => computeSweepCount(shape.current), [shape.current])
     const [cheatingEnable, setCheatingEnable] = useState(false)
     const [tiles, setTiles] = useState<Tile[]>([])
@@ -133,7 +134,12 @@ export const useGame = (): GameInstance => {
         openCount === needSweepCount && endGame('win')
     }
 
-    const openTile = (tile: Tile): boolean => {
+    const clearPressing = useCallback(() => {
+        pressingTiles.current.forEach(t => t.pressing = false)
+        pressingTiles.current.clear()
+    }, [])
+
+    const openTile = useCallback((tile: Tile): boolean => {
         if (state !== 'initial' && state !== 'running') return false
         clearPressing()
         state === 'initial' && startGame(tile.pos)
@@ -147,9 +153,9 @@ export const useGame = (): GameInstance => {
             checkWin()
             return true
         }
-    }
+    }, [state, clearPressing])
 
-    const openTiles = (tile: Tile): boolean => {
+    const openTiles = useCallback((tile: Tile): boolean => {
         if (state !== 'initial' && state !== 'running') return false
         clearPressing()
         const flagCount = countNeighbor(shape.current, tiles, tile, t => t.state === 'flag')
@@ -157,9 +163,9 @@ export const useGame = (): GameInstance => {
         let effective = false
         iterateNeighbor(shape.current, tiles, tile, t => effective = openTile(t) || effective)
         return effective
-    }
+    }, [state, tiles, clearPressing, openTile])
 
-    const changeFlag = (tile: Tile) => {
+    const changeFlag = useCallback((tile: Tile) => {
         if (state !== 'running' || setting.current?.forceNf) return
         clearPressing()
         if (tile.state === 'unknown') {
@@ -169,23 +175,23 @@ export const useGame = (): GameInstance => {
             tile.state = 'unknown'
             decreaseFlag()
         }
-    }
+    }, [state, clearPressing, increaseFlag, decreaseFlag])
 
-    const clearPressing = () => {
-        tiles.filter(t => t.pressing).forEach(t => t.pressing = false)
-    }
-
-    const pressTile = (tile: Tile) => {
+    const pressTile = useCallback((tile: Tile) => {
         if (state !== 'running') return
         clearPressing()
         tile.pressing = true
-    }
+        pressingTiles.current.add(tile)
+    }, [state, clearPressing])
 
-    const pressTiles = (tile: Tile) => {
+    const pressTiles = useCallback((tile: Tile) => {
         if (state !== 'running') return
         pressTile(tile)
-        iterateNeighbor(shape.current, tiles, tile, t => t.pressing = true)
-    }
+        iterateNeighbor(shape.current, tiles, tile, t => {
+            t.pressing = true
+            pressingTiles.current.add(t)
+        })
+    }, [state, tiles, pressTile])
 
     return {
         shape,

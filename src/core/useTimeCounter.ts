@@ -20,7 +20,7 @@ export const useTimeCounter = (): TimeCounter => {
         timer.current = setInterval(() => {
             const newTime = Date.now() - startTime.current
             setTime(newTime)
-        })
+        }, 100) // Update every 100ms instead of every ~1ms
     }
 
     const end = () => {

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useCallback, useEffect } from "react"
 import Panel from "./Panel"
 import Counter from "./Counter"
 import { GameContext, GameContextInfo, useGameContextProvider } from "./context"
@@ -6,7 +6,7 @@ import { OptionContextInfo, useOption } from "@view/useOption"
 
 const useKeyboardListener = (context: GameContextInfo, optionContext: OptionContextInfo) => {
     const { toggleVisible, setLevel } = optionContext
-    const handler = (ev: KeyboardEvent) => {
+    const handler = useCallback((ev: KeyboardEvent) => {
         const key = ev.key
         let processed = true
         if (key === 'F2') {
@@ -25,12 +25,12 @@ const useKeyboardListener = (context: GameContextInfo, optionContext: OptionCont
             processed = false
         }
         processed && ev.preventDefault()
-    }
+    }, [context, toggleVisible, setLevel])
 
     useEffect(() => {
         window.addEventListener('keydown', handler)
         return () => window.removeEventListener('keydown', handler)
-    }, [])
+    }, [handler])
 }
 
 const Game = () => {

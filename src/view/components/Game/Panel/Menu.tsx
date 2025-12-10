@@ -1,6 +1,6 @@
 import { classNames } from "@util/style"
 import { useLocale } from "@view/useLocale"
-import React, { ReactNode, useEffect, useRef, useState } from "react"
+import React, { memo, ReactNode, useCallback, useEffect, useRef, useState } from "react"
 import { useGameContext } from "../context"
 import { useOption } from "@view/useOption"
 import "./menu.sass"
@@ -21,7 +21,7 @@ type GroupProps = {
 
 type MenuGroup = 'game' | 'help'
 
-const Item = (props: ItemProps) => {
+const Item = memo((props: ItemProps) => {
     const { label, checked, onClick, shortcut } = props
     return (
         <div className="menu-item" onClick={onClick}>
@@ -30,13 +30,13 @@ const Item = (props: ItemProps) => {
             <span className="shortcut">{shortcut || ''}</span>
         </div>
     )
-}
+})
 
 const Separator = () => {
     return <div className="menu-separator" />
 }
 
-const Group = (props: GroupProps) => {
+const Group = memo((props: GroupProps) => {
     const { label, open, children, onClick } = props
     return (
         <div className={classNames('menu-group', open && 'open')}>
@@ -48,7 +48,7 @@ const Group = (props: GroupProps) => {
             </div>
         </div>
     )
-}
+})
 
 const Menu = () => {
     const { t } = useLocale()
@@ -57,7 +57,7 @@ const Menu = () => {
     const level = option?.level
     const [openMenu, setOpenMenu] = useState<MenuGroup>()
     const container = useRef<HTMLDivElement>()
-    const toggleMenu = (newVal: MenuGroup) => setOpenMenu(newVal === openMenu ? null : newVal)
+    const toggleMenu = useCallback((newVal: MenuGroup) => setOpenMenu(newVal === openMenu ? null : newVal), [openMenu])
     useEffect(() => {
         const handleClick = (ev: MouseEvent) => {
             const target = ev.target as HTMLElement
@@ -65,11 +65,11 @@ const Menu = () => {
         }
         window.addEventListener('click', handleClick)
         return () => window.removeEventListener('click', handleClick)
-    }, [])
-    const closeThen = () => {
+    }, [toggleMenu])
+    const closeThen = useCallback(() => {
         setOpenMenu(null)
         return true
-    }
+    }, [])
     return (
         <div className="menu-container" ref={container}>
             <Group
@@ -114,4 +114,4 @@ const Menu = () => {
     )
 }
 
-export default Menu
+export default memo(Menu)

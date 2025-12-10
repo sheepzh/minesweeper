@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { Tile } from "@core/common"
 import Bar from "./Bar"
 import { useGameContext } from "../context"
@@ -43,7 +43,7 @@ const Panel = () => {
         }
     }, [action.target, action.click])
 
-    const onTilesMouseDown = (tile: Tile, e: React.MouseEvent) => {
+    const onTilesMouseDown = useCallback((tile: Tile, e: React.MouseEvent) => {
         if (e.button === 2 && e.buttons === 2 && tile) {
             // Right click
             setAction({ target: tile, click: 'right' })
@@ -54,13 +54,13 @@ const Panel = () => {
             // Double click only effective when running
             setAction({ target: tile, click: 'double' })
         }
-    }
+    }, [state])
 
     useEffect(() => {
         state === 'dead' && timeCounter.end()
     }, [state])
 
-    function onTilesMouseUp() {
+    const onTilesMouseUp = useCallback(function() {
         const { target, click } = action || {}
         if (!click || !target) return
         if (state !== 'initial' && state !== 'running') return
@@ -78,10 +78,10 @@ const Panel = () => {
         }
         effective && increaseEffective()
         setAction({ click: null, target: null })
-    }
+    }, [action, state, increaseClick, timeCounter, openTile, openTiles, changeFlag, increaseEffective])
 
-    const onTilesMouseEnter = (tile: Tile) => setAction({ target: tile, click: action?.click })
-    const onTilesMouseLeave = () => setAction({ click: null, target: null })
+    const onTilesMouseEnter = useCallback((tile: Tile) => setAction({ target: tile, click: action?.click }), [action?.click])
+    const onTilesMouseLeave = useCallback(() => setAction({ click: null, target: null }), [])
     const { t } = useLocale()
     const { option } = useOption()
 

@@ -1,5 +1,5 @@
 import { classNames } from "@util/style"
-import React, { useEffect, useMemo, useState } from "react"
+import React, { memo, useEffect, useMemo, useState } from "react"
 import { useGameState } from "../context"
 
 const calculateDigits = (value: number): [number | '-', number, number] => {
@@ -17,7 +17,7 @@ const calculateDigits = (value: number): [number | '-', number, number] => {
     return [a, b, c]
 }
 
-const DigitCard = (props: { value: number }) => {
+const DigitCard = memo((props: { value: number }) => {
     let { value = 0 } = props
     value = Math.ceil(value)
     const digits = useMemo(() => calculateDigits(value), [value])
@@ -28,9 +28,9 @@ const DigitCard = (props: { value: number }) => {
             ))}
         </div>
     )
-}
+})
 
-const Emoji = (props: { barPressing: boolean, tilePressing: boolean }) => {
+const Emoji = memo((props: { barPressing: boolean, tilePressing: boolean }) => {
     const { barPressing, tilePressing } = props
     const gameState = useGameState()
     return (
@@ -45,7 +45,7 @@ const Emoji = (props: { barPressing: boolean, tilePressing: boolean }) => {
             />
         </div>
     )
-}
+})
 
 type Props = {
     time: number
@@ -74,4 +74,4 @@ const Bar = (props: Props) => {
         </div>
     )
 }
-export default Bar
+export default memo(Bar)
