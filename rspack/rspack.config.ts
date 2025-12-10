@@ -39,6 +39,9 @@ export default defineConfig({
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
     alias: resolveAlias,
   },
+  experiments: {
+    css: true,
+  },
   module: {
     rules: [
       {
@@ -59,22 +62,15 @@ export default defineConfig({
                   },
                 },
               },
+              env: {
+                targets: {
+                  chrome: '87',
+                },
+              },
             },
           },
         ],
         type: 'javascript/auto',
-      },
-      {
-        test: /\.css$/,
-        use: [
-          {
-            loader: 'builtin:lightningcss-loader',
-            options: {
-              targets: 'ie 10',
-            },
-          },
-        ],
-        type: 'css',
       },
       {
         test: /\.(png|jpg|jpeg|gif)$/,
@@ -94,7 +90,4 @@ export default defineConfig({
       chunks: ['index'],
     }),
   ],
-  builtins: {
-    emotion: true,
-  },
 });

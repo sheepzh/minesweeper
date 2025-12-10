@@ -14,10 +14,8 @@
   "license": "MIT",
   "devDependencies": {
     "@emotion/babel-plugin": "^11.12.0",
-    "@rspack/cli": "^1.1.7",
-    "@rspack/core": "^1.1.7",
-    "@rspack/dev-server": "^1.1.7",
-    "@rspack/plugin-react-refresh": "^1.0.0",
+    "@rspack/cli": "^1.6.7",
+    "@rspack/core": "^1.6.7",
     "@types/chrome": "^0.0.268",
     "@types/node": "^22.10.1",
     "@types/react": "^18.3.3",
